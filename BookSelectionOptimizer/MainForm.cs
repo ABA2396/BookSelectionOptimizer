@@ -72,7 +72,6 @@ namespace BookSelectionOptimizer
             btnRun.Enabled = true;
             timer1.Stop();
             btnRun.Text = @"开始凑单";
-            MessageBox.Show($@"计算完成！耗时 {DateTime.Now - _startTime:hh\:mm\:ss}");
 
             if (results == null || results.Count == 0)
             {
@@ -94,7 +93,7 @@ namespace BookSelectionOptimizer
                 }
                 else
                 {
-                    MessageBox.Show($@"计算完成！目标金额：{totalSum / 100.0:0.##}", @"成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($@"计算完成！目标金额：{totalSum / 100.0:0.##}，耗时 {DateTime.Now - _startTime:hh\:mm\:ss}", @"成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }
@@ -219,13 +218,12 @@ namespace BookSelectionOptimizer
 
                     for (int w = size - 1; w >= 0; --w)
                     {
-                        if (w >= shiftWords)
+                        if (w < shiftWords) continue;
+
+                        temp[w] |= (dp[w - shiftWords] << shiftBits);
+                        if (shiftBits != 0 && (w - shiftWords - 1) >= 0)
                         {
-                            temp[w] |= (dp[w - shiftWords] << shiftBits);
-                            if (shiftBits != 0 && (w - shiftWords - 1) >= 0)
-                            {
-                                temp[w] |= (dp[w - shiftWords - 1] >> (64 - shiftBits));
-                            }
+                            temp[w] |= (dp[w - shiftWords - 1] >> (64 - shiftBits));
                         }
                     }
                 }
