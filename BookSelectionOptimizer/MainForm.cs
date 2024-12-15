@@ -167,7 +167,7 @@ namespace BookSelectionOptimizer
             public int Price { get; set; } // 已乘以100的整数价格
         }
 
-        private List<(string book, int price, int qty, int cost)> BitDP_Optimized(List<Book> books, int n, int m, int targetAmount, bool allowZero)
+        private static List<(string book, int price, int qty, int cost)> BitDP_Optimized(List<Book> books, int n, int m, int targetAmount, bool allowZero)
         {
             var rawN = n;
 
@@ -373,14 +373,14 @@ namespace BookSelectionOptimizer
                     foreach (var result in results)
                     {
                         sheet.Cell(row, 1).Value = result.book;
-                        sheet.Cell(row, 2).Value = result.price;
+                        sheet.Cell(row, 2).Value = result.price / 100.0;
                         sheet.Cell(row, 3).Value = result.qty;
                         sheet.Cell(row, 4).Value = result.cost / 100.0; // 转回元
                         row++;
                     }
 
-                    sheet.Cell(row, 3).Value = "总计（元）";
-                    sheet.Cell(row, 4).Value = totalCost / 100.0;
+                    // sheet.Cell(row, 3).Value = "总计（元）";
+                    // sheet.Cell(row, 4).Value = totalCost / 100.0;
 
                     workbook.SaveAs(outputFilePath);
                 }
