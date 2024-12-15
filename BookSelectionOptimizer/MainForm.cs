@@ -43,6 +43,7 @@ namespace BookSelectionOptimizer
             }
 
             var booksData = LoadBooksFromExcel(filePath);
+            var booksData = await Task.Run(() => LoadBooksFromExcel(filePath));
             if (booksData == null || booksData.Count == 0)
             {
                 MessageBox.Show(@"未找到有效的书籍数据！", @"错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
