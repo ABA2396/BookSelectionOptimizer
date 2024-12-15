@@ -2,13 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ClosedXML.Excel;
-using Microsoft.Z3;
-using Context = Microsoft.Z3.Context;
-using Status = Microsoft.Z3.Status;
 
 namespace BookSelectionOptimizer
 {
@@ -33,6 +29,20 @@ namespace BookSelectionOptimizer
             }
         }
 
+        private void Start()
+        {
+            btnRun.Enabled = false;
+            _startTime = DateTime.Now;
+            timer1.Start();
+        }
+
+        private void Stop()
+        {
+            btnRun.Enabled = true;
+            timer1.Stop();
+            btnRun.Text = @"开始凑单";
+        }
+
         private async void btnRun_Click(object sender, EventArgs e)
         {
             var filePath = txtFilePath.Text;
@@ -42,11 +52,13 @@ namespace BookSelectionOptimizer
                 return;
             }
 
-            var booksData = LoadBooksFromExcel(filePath);
+            Start();
+
             var booksData = await Task.Run(() => LoadBooksFromExcel(filePath));
             if (booksData == null || booksData.Count == 0)
             {
                 MessageBox.Show(@"未找到有效的书籍数据！", @"错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Stop();
                 return;
             }
 
@@ -59,20 +71,17 @@ namespace BookSelectionOptimizer
                 !int.TryParse(txtMaxQty.Text, out var maxQty))
             {
                 MessageBox.Show(@"请填写有效的数字！", @"错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Stop();
                 return;
             }
 
             var allowZero = allowZeroCheck.Checked;
 
-            btnRun.Enabled = false;
-            _startTime = DateTime.Now;
-            timer1.Start();
             // var results = await Task.Run(() => SolveBookSelectionWithZ3(books, prices, targetAmount, minQty, maxQty, allowZero));
             var bookList = books.Select((t, i) => new Book { Name = t, Price = prices[i] }).ToList();
             var results = await Task.Run(() => BitDP_Optimized(bookList, minQty, maxQty, targetAmount, allowZero));
-            btnRun.Enabled = true;
-            timer1.Stop();
-            btnRun.Text = @"开始凑单";
+            Stop();
+            var timeSpan = DateTime.Now - _startTime;
 
             if (results == null || results.Count == 0)
             {
@@ -94,7 +103,7 @@ namespace BookSelectionOptimizer
                 }
                 else
                 {
-                    MessageBox.Show($@"计算完成！目标金额：{totalSum / 100.0:0.##}，耗时 {DateTime.Now - _startTime:hh\:mm\:ss}", @"成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($@"计算完成！目标金额：{totalSum / 100.0:0.##}，耗时 {timeSpan:hh\:mm\:ss}", @"成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }
@@ -166,7 +175,7 @@ namespace BookSelectionOptimizer
         public class Book
         {
             public string Name { get; set; }
-            public int Price { get; set; } // 已乘以100的整数价格
+            public int Price { get; set; } // 已乘以 100 的整数价格
         }
 
         private static List<(string book, int price, int qty, int cost)> BitDP_Optimized(List<Book> books, int n, int m, int targetAmount, bool allowZero)
@@ -176,11 +185,11 @@ namespace BookSelectionOptimizer
             // 初始化位集合
             int size = (targetAmount / 64) + 1;
             var dp = new List<ulong>(new ulong[size]);
-            dp[0] |= 1UL; // 初始状态，价格为0
+            dp[0] |= 1UL; // 初始状态，价格为 0
 
             // Parent数组，用于方案重构
 
-            // 如果不允许数量为0，先将总价减去所有书籍的最小数量的总价
+            // 如果不允许数量为 0，先将总价减去所有书籍的最小数量的总价
             if (!allowZero)
             {
                 targetAmount = books.Aggregate(targetAmount, (current, book) => current - book.Price * n);
@@ -202,10 +211,7 @@ namespace BookSelectionOptimizer
             foreach (var book in books)
             {
                 int p = book.Price;
-                if (p == 0) continue; // 避免价格为0导致无限循环
-
-                // 创建一个临时位集合用于更新
-                var temp = new List<ulong>(dp);
+                if (p == 0) continue; // 避免价格为 0 导致无限循环
 
                 // 遍历选择数量
                 for (int cnt = n; cnt <= m; ++cnt)
@@ -217,19 +223,15 @@ namespace BookSelectionOptimizer
                     int shiftWords = (int)(contribution >> 6); // 除以 64
                     int shiftBits = (int)(contribution & 63); // 取余 64
 
-                    for (int w = size - 1; w >= 0; --w)
+                    for (int w = size - 1; w >= shiftWords; --w)
                     {
-                        if (w < shiftWords) continue;
-
-                        temp[w] |= (dp[w - shiftWords] << shiftBits);
+                        dp[w] |= (dp[w - shiftWords] << shiftBits);
                         if (shiftBits != 0 && (w - shiftWords - 1) >= 0)
                         {
-                            temp[w] |= (dp[w - shiftWords - 1] >> (64 - shiftBits));
+                            dp[w] |= (dp[w - shiftWords - 1] >> (64 - shiftBits));
                         }
                     }
                 }
-
-                dp = temp;
             }
 
             // 检查是否可达目标总价
