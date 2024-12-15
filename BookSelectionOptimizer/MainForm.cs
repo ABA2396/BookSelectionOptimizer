@@ -1,4 +1,17 @@
-﻿using System;
+﻿// <copyright file="MainForm.cs" company="uye">
+// MainForm - A part of the BookSelectionOptimizer project
+// Copyright (C) 2024 uye and Contributors
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License v3.0 only as published by
+// the Free Software Foundation, either version 3 of the License, or
+// any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY
+// </copyright>
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
