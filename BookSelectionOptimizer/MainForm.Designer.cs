@@ -36,16 +36,16 @@
             this.txtMaxQty = new System.Windows.Forms.TextBox();
             this.btnRun = new System.Windows.Forms.Button();
             this.dgvResults = new System.Windows.Forms.DataGridView();
+            this.书名 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.定价 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.数量 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.小计 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.allowZeroCheck = new System.Windows.Forms.CheckBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.书名 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.定价 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.数量 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.小计 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dgvResults)).BeginInit();
             this.SuspendLayout();
             // 
@@ -116,6 +116,34 @@
             this.dgvResults.Size = new System.Drawing.Size(685, 329);
             this.dgvResults.TabIndex = 6;
             // 
+            // 书名
+            // 
+            this.书名.HeaderText = "书名";
+            this.书名.MinimumWidth = 10;
+            this.书名.Name = "书名";
+            this.书名.Width = 250;
+            // 
+            // 定价
+            // 
+            this.定价.HeaderText = "定价";
+            this.定价.MinimumWidth = 10;
+            this.定价.Name = "定价";
+            this.定价.Width = 200;
+            // 
+            // 数量
+            // 
+            this.数量.HeaderText = "数量";
+            this.数量.MinimumWidth = 10;
+            this.数量.Name = "数量";
+            this.数量.Width = 200;
+            // 
+            // 小计
+            // 
+            this.小计.HeaderText = "小计（元）";
+            this.小计.MinimumWidth = 10;
+            this.小计.Name = "小计";
+            this.小计.Width = 200;
+            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -166,31 +194,6 @@
             // 
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // 书名
-            // 
-            this.书名.HeaderText = "书名";
-            this.书名.MinimumWidth = 10;
-            this.书名.Name = "书名";
-            this.书名.Width = 250;
-            // 
-            // 定价
-            // 
-            this.定价.HeaderText = "定价";
-            this.定价.MinimumWidth = 10;
-            this.定价.Name = "定价";
-            // 
-            // 数量
-            // 
-            this.数量.HeaderText = "数量";
-            this.数量.MinimumWidth = 10;
-            this.数量.Name = "数量";
-            // 
-            // 小计
-            // 
-            this.小计.HeaderText = "小计（元）";
-            this.小计.MinimumWidth = 10;
-            this.小计.Name = "小计";
-            // 
             // MainForm
             // 
             this.ClientSize = new System.Drawing.Size(765, 486);
@@ -207,6 +210,7 @@
             this.Controls.Add(this.btnSelectFile);
             this.Controls.Add(this.txtFilePath);
             this.Name = "MainForm";
+            this.Text = "书单配平";
             ((System.ComponentModel.ISupportInitialize)(this.dgvResults)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
