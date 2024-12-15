@@ -41,7 +41,7 @@
 ## 界面截图
 
 ![image](https://github.com/user-attachments/assets/f8f12173-3d37-402d-a72a-6a4a32888a84)
-![image](https://github.com/user-attachments/assets/abb106e0-76f4-41c7-99aa-4ab372a9254c)
+![image](https://github.com/user-attachments/assets/be984d0c-9e1b-4dfb-b361-23c839052f21)
 ![image](https://github.com/user-attachments/assets/5d4aa21d-a0bd-447e-93c8-f667343e909f)
 ![image](https://github.com/user-attachments/assets/352b9000-97c3-4dc8-a1ae-5acfce9bcea4)
 
