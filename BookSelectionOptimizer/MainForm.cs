@@ -360,7 +360,7 @@ namespace BookSelectionOptimizer
         {
             var directory = Path.GetDirectoryName(originalFilePath);
             if (directory == null) return;
-            var outputFilePath = Path.Combine(directory, "凑单结果.xlsx");
+            var outputFilePath = $"{originalFilePath}凑单结果.xlsx";
 
             try
             {
