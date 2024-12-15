@@ -38,6 +38,13 @@
 - `LoadBooksFromExcel`：从 Excel 文件加载书籍数据。
 - `SaveResultsToExcel`：将计算结果保存到 Excel 文件。
 
+## 界面截图
+
+![image](https://github.com/user-attachments/assets/f8f12173-3d37-402d-a72a-6a4a32888a84)
+![image](https://github.com/user-attachments/assets/abb106e0-76f4-41c7-99aa-4ab372a9254c)
+![image](https://github.com/user-attachments/assets/5d4aa21d-a0bd-447e-93c8-f667343e909f)
+![image](https://github.com/user-attachments/assets/352b9000-97c3-4dc8-a1ae-5acfce9bcea4)
+
 ## 贡献
 
 欢迎贡献代码！请 fork 此仓库并提交 pull request。
