@@ -87,7 +87,7 @@ namespace BookSelectionOptimizer
                 }
 
                 var totalSum = results.Sum(item => item.cost);
-                SaveResultsToExcel(filePath, results, totalSum);
+                SaveResultsToExcel(filePath, results);
                 if (totalSum != targetAmount)
                 {
                     MessageBox.Show($@"书单价格不等于指定价格，可能为目标无解，或给定的范围不足，当前金额：{totalSum / 100.0:0.##}，目标金额：{targetAmount / 100.0:0.##}", @"警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -99,6 +99,7 @@ namespace BookSelectionOptimizer
             }
         }
 
+        /*
         private static List<(string book, int qty, int cost)> SolveBookSelectionWithZ3(List<string> books, List<int> prices, int totalPrice, int n, int m, bool allowZero)
         {
             // 使用 Z3 定义优化问题
@@ -160,6 +161,7 @@ namespace BookSelectionOptimizer
                 return selectedBooks;
             }
         }
+        */
 
         public class Book
         {
@@ -353,7 +355,7 @@ namespace BookSelectionOptimizer
             return books;
         }
 
-        private static void SaveResultsToExcel(string originalFilePath, List<(string book, int price, int qty, int cost)> results, int totalCost)
+        private static void SaveResultsToExcel(string originalFilePath, List<(string book, int price, int qty, int cost)> results)
         {
             var directory = Path.GetDirectoryName(originalFilePath);
             if (directory == null) return;
