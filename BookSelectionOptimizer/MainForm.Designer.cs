@@ -40,11 +40,12 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
-            this.书名 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.数量 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.小计 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.allowZeroCheck = new System.Windows.Forms.CheckBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.书名 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.定价 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.数量 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.小计 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.dgvResults)).BeginInit();
             this.SuspendLayout();
             // 
@@ -105,6 +106,7 @@
             this.dgvResults.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvResults.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.书名,
+            this.定价,
             this.数量,
             this.小计});
             this.dgvResults.Location = new System.Drawing.Point(40, 149);
@@ -119,7 +121,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(53, 36);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(53, 12);
+            this.label1.Size = new System.Drawing.Size(94, 21);
             this.label1.TabIndex = 7;
             this.label1.Text = "文件路径";
             // 
@@ -128,7 +130,7 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(38, 99);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(89, 12);
+            this.label2.Size = new System.Drawing.Size(157, 21);
             this.label2.TabIndex = 7;
             this.label2.Text = "目标金额（分）";
             // 
@@ -137,7 +139,7 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(257, 99);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(53, 12);
+            this.label3.Size = new System.Drawing.Size(94, 21);
             this.label3.TabIndex = 7;
             this.label3.Text = "数量下限";
             // 
@@ -146,16 +148,36 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(426, 99);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(53, 12);
+            this.label4.Size = new System.Drawing.Size(94, 21);
             this.label4.TabIndex = 7;
             this.label4.Text = "数量上限";
+            // 
+            // allowZeroCheck
+            // 
+            this.allowZeroCheck.AutoSize = true;
+            this.allowZeroCheck.Location = new System.Drawing.Point(395, 128);
+            this.allowZeroCheck.Name = "allowZeroCheck";
+            this.allowZeroCheck.Size = new System.Drawing.Size(127, 27);
+            this.allowZeroCheck.TabIndex = 8;
+            this.allowZeroCheck.Text = "允许为 0";
+            this.allowZeroCheck.UseVisualStyleBackColor = true;
+            // 
+            // timer1
+            // 
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // 书名
             // 
             this.书名.HeaderText = "书名";
             this.书名.MinimumWidth = 10;
             this.书名.Name = "书名";
-            this.书名.Width = 350;
+            this.书名.Width = 250;
+            // 
+            // 定价
+            // 
+            this.定价.HeaderText = "定价";
+            this.定价.MinimumWidth = 10;
+            this.定价.Name = "定价";
             // 
             // 数量
             // 
@@ -168,20 +190,6 @@
             this.小计.HeaderText = "小计（元）";
             this.小计.MinimumWidth = 10;
             this.小计.Name = "小计";
-            // 
-            // allowZeroCheck
-            // 
-            this.allowZeroCheck.AutoSize = true;
-            this.allowZeroCheck.Location = new System.Drawing.Point(395, 128);
-            this.allowZeroCheck.Name = "allowZeroCheck";
-            this.allowZeroCheck.Size = new System.Drawing.Size(72, 16);
-            this.allowZeroCheck.TabIndex = 8;
-            this.allowZeroCheck.Text = "允许为 0";
-            this.allowZeroCheck.UseVisualStyleBackColor = true;
-            // 
-            // timer1
-            // 
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // MainForm
             // 
@@ -218,11 +226,12 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 书名;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 数量;
-        private System.Windows.Forms.DataGridViewTextBoxColumn 小计;
         private System.Windows.Forms.CheckBox allowZeroCheck;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 书名;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 定价;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 数量;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 小计;
     }
 }
 
