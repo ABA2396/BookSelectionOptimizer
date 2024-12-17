@@ -92,7 +92,7 @@ namespace BookSelectionOptimizer
 
             // var results = await Task.Run(() => SolveBookSelectionWithZ3(books, prices, targetAmount, minQty, maxQty, allowZero));
             var bookList = books.Select((t, i) => new Book { Name = t, Price = prices[i] }).ToList();
-            var results = await Task.Run(() => BitDP_Optimized(bookList, minQty, maxQty, targetAmount, allowZero));
+            var results = await Task.Run(() => DP_Optimized(bookList, minQty, maxQty, targetAmount, allowZero));
             Stop();
             var timeSpan = DateTime.Now - _startTime;
 
@@ -191,14 +191,9 @@ namespace BookSelectionOptimizer
             public int Price { get; set; } // 已乘以 100 的整数价格
         }
 
-        private static List<(string book, int price, int qty, int cost)> BitDP_Optimized(List<Book> books, int n, int m, int targetAmount, bool allowZero)
+        private static List<(string book, int price, int qty, int cost)> DP_Optimized(List<Book> books, int n, int m, int targetAmount, bool allowZero)
         {
             var rawN = n;
-
-            // 初始化位集合
-            var size = (targetAmount / 64) + 1;
-            var dp = new List<ulong>(new ulong[size]);
-            dp[0] |= 1UL; // 初始状态，价格为 0
 
             var minPossibleAmount = 0;
             var maxPossibleAmount = 0;
@@ -228,11 +223,16 @@ namespace BookSelectionOptimizer
             }
 
             // 方案重构
-            dp = new List<ulong>(new ulong[size]);
-            dp[0] |= 1UL;
-            var parent = new List<ParentInfo>(new ParentInfo[targetAmount + 1]);
+            var dp = new bool[targetAmount + 1];
+            dp[0] = true;
+            var parent = new ParentInfo[targetAmount + 1];
+            for (var i = 0; i <= targetAmount; i++)
+            {
+                parent[i] = new ParentInfo { BookIndex = -1, Count = 0 };
+            }
+
             var booksCount = books.Count;
-            var dpCount = dp.Count;
+
             for (var i = 0; i < booksCount; ++i)
             {
                 var p = books[i].Price;
@@ -249,16 +249,13 @@ namespace BookSelectionOptimizer
                         var prev = current - contribution;
                         if (prev < 0) continue;
 
-                        var prevWord = (prev >> 6);
-                        var prevBit = (prev & 63);
-                        if (prevWord >= dpCount || (dp[prevWord] & (1UL << prevBit)) == 0 || parent[prev]?.BookIndex == i) continue;
+                        if (!dp[prev] || parent[prev].BookIndex == i) continue;
 
-                        var wordIdx = (current >> 6);
-                        var bitIdx = (current & 63);
-                        if ((dp[wordIdx] & (1UL << bitIdx)) != 0) continue;
+                        if (dp[current]) continue;
 
-                        dp[wordIdx] |= (1UL << bitIdx);
-                        parent[current] = new ParentInfo { BookIndex = i, Count = cnt };
+                        dp[current] = true;
+                        parent[current].BookIndex = i;
+                        parent[current].Count = cnt;
                     }
                 }
             }
@@ -282,10 +279,10 @@ namespace BookSelectionOptimizer
                 : books.Select((t, i) => (t.Name, t.Price, selectedCounts[i] + rawN, (selectedCounts[i] + rawN) * t.Price)).ToList();
         }
 
-        private class ParentInfo
+        private struct ParentInfo
         {
-            public int BookIndex { get; set; }
-            public int Count { get; set; }
+            public int BookIndex;
+            public int Count;
         }
 
         private static List<(string book, int price)> LoadBooksFromExcel(string filePath)
