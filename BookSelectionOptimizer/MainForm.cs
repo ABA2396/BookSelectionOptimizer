@@ -103,7 +103,7 @@ namespace BookSelectionOptimizer
             else
             {
                 dgvResults.Rows.Clear();
-                foreach (var (book ,price, qty, cost) in results)
+                foreach (var (book, price, qty, cost) in results)
                 {
                     dgvResults.Rows.Add(book, (decimal)price / 100, qty, (decimal)cost / 100);
                 }
@@ -112,11 +112,11 @@ namespace BookSelectionOptimizer
                 SaveResultsToExcel(filePath, results);
                 if (totalSum != targetAmount)
                 {
-                    MessageBox.Show($@"书单价格不等于指定价格，可能为目标无解，或给定的范围不足，当前金额：{totalSum / 100.0:0.##}，目标金额：{targetAmount / 100.0:0.##}", @"警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show($@"书单价格不等于指定价格，可能为目标无解，或给定的范围不足，当前金额：{totalSum / 100.0:0.0#}，目标金额：{targetAmount / 100.0:0.0#}", @"警告", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
                 else
                 {
-                    MessageBox.Show($@"计算完成！目标金额：{totalSum / 100.0:0.##}，耗时 {timeSpan:hh\:mm\:ss}", @"成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show($@"计算完成！目标金额：{totalSum / 100.0:0.0#}，耗时 {timeSpan:hh\:mm\:ss}", @"成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
         }
@@ -196,69 +196,35 @@ namespace BookSelectionOptimizer
             var rawN = n;
 
             // 初始化位集合
-            int size = (targetAmount / 64) + 1;
+            var size = (targetAmount / 64) + 1;
             var dp = new List<ulong>(new ulong[size]);
             dp[0] |= 1UL; // 初始状态，价格为 0
 
-            // Parent数组，用于方案重构
+            var minPossibleAmount = 0;
+            var maxPossibleAmount = 0;
+
+            foreach (var price in books.Select(book => book.Price))
+            {
+                minPossibleAmount += price * n;
+                maxPossibleAmount += price * m;
+            }
+
+            if (targetAmount <= minPossibleAmount)
+            {
+                return books.Select(book => (book.Name, book.Price, n, n * book.Price)).ToList(); ;
+            }
+
+            if (targetAmount >= maxPossibleAmount)
+            {
+                return books.Select(book => (book.Name, book.Price, m, m * book.Price)).ToList();
+            }
 
             // 如果不允许数量为 0，先将总价减去所有书籍的最小数量的总价
             if (!allowZero)
             {
-                targetAmount = books.Aggregate(targetAmount, (current, book) => current - book.Price * n);
+                targetAmount -= minPossibleAmount;
                 m -= n;
                 n = 0;
-            }
-
-            if (targetAmount < 0)
-            {
-                return null;
-            }
-
-            if (targetAmount == 0)
-            {
-                return books.Select(book => (book.Name, book.Price, rawN, rawN * book.Price)).ToList();
-            }
-
-            // 动态规划过程
-            foreach (var book in books)
-            {
-                int p = book.Price;
-                if (p == 0) continue; // 避免价格为 0 导致无限循环
-
-                // 遍历选择数量
-                for (int cnt = n; cnt <= m; ++cnt)
-                {
-                    long contribution = (long)p * cnt;
-                    if (contribution > targetAmount) break;
-
-                    // 位移操作
-                    int shiftWords = (int)(contribution >> 6); // 除以 64
-                    int shiftBits = (int)(contribution & 63); // 取余 64
-
-                    for (int w = size - 1; w >= shiftWords; --w)
-                    {
-                        dp[w] |= (dp[w - shiftWords] << shiftBits);
-                        if (shiftBits != 0 && (w - shiftWords - 1) >= 0)
-                        {
-                            dp[w] |= (dp[w - shiftWords - 1] >> (64 - shiftBits));
-                        }
-                    }
-                }
-            }
-
-            // 检查是否可达目标总价
-            bool possible = false;
-            int word = targetAmount >> 6; // 除以 64
-            int bit = targetAmount & 63; // 取余 64
-            if (word < dp.Count && (dp[word] & (1UL << bit)) != 0)
-            {
-                possible = true;
-            }
-
-            if (!possible)
-            {
-                return null;
             }
 
             // 方案重构
@@ -267,63 +233,53 @@ namespace BookSelectionOptimizer
             var parent = new List<ParentInfo>(new ParentInfo[targetAmount + 1]);
             var booksCount = books.Count;
             var dpCount = dp.Count;
-            for (int i = 0; i < booksCount; ++i)
+            for (var i = 0; i < booksCount; ++i)
             {
-                int p = books[i].Price;
+                var p = books[i].Price;
                 if (p == 0) continue;
 
                 // 遍历选择数量
-                for (int cnt = n; cnt <= m; ++cnt)
+                for (var cnt = n; cnt <= m; ++cnt)
                 {
-                    long contribution = (long)p * cnt;
+                    var contribution = p * cnt;
                     if (contribution > targetAmount) break;
 
-                    for (long current = targetAmount; current >= contribution; --current)
+                    for (var current = targetAmount; current >= contribution; --current)
                     {
-                        long prev = current - contribution;
+                        var prev = current - contribution;
                         if (prev < 0) continue;
 
-                        int prevWord = (int)(prev >> 6);
-                        int prevBit = (int)(prev & 63);
-                        int wordIdx = (int)(current >> 6);
-                        int bitIdx = (int)(current & 63);
+                        var prevWord = (prev >> 6);
+                        var prevBit = (prev & 63);
+                        if (prevWord >= dpCount || (dp[prevWord] & (1UL << prevBit)) == 0 || parent[prev]?.BookIndex == i) continue;
 
-                        if (prevWord < dpCount && (dp[prevWord] & (1UL << prevBit)) != 0 && parent[(int)prev]?.BookIndex != i)
-                        {
-                            if ((dp[wordIdx] & (1UL << bitIdx)) == 0)
-                            {
-                                dp[wordIdx] |= (1UL << bitIdx);
-                                parent[(int)current] = new ParentInfo { BookIndex = i, Count = cnt };
-                            }
-                        }
+                        var wordIdx = (current >> 6);
+                        var bitIdx = (current & 63);
+                        if ((dp[wordIdx] & (1UL << bitIdx)) != 0) continue;
+
+                        dp[wordIdx] |= (1UL << bitIdx);
+                        parent[current] = new ParentInfo { BookIndex = i, Count = cnt };
                     }
                 }
             }
 
             // 回溯获取购买方案
             var selectedCounts = new int[booksCount];
-            long sum = targetAmount;
+            var sum = targetAmount;
             while (sum > 0)
             {
-                var info = parent[(int)sum];
+                var info = parent[sum];
                 if (info.BookIndex == -1)
                 {
                     return null;
                 }
                 selectedCounts[info.BookIndex] += info.Count;
-                sum -= (long)info.Count * books[info.BookIndex].Price;
+                sum -= info.Count * books[info.BookIndex].Price;
             }
 
-            // 如果不允许数量为0，将最小数量加回去
-            if (!allowZero)
-            {
-                for (int i = 0; i < booksCount; ++i)
-                {
-                    selectedCounts[i] += rawN;
-                }
-            }
-
-            return books.Select((t, i) => (t.Name, t.Price, selectedCounts[i], selectedCounts[i] * t.Price)).ToList();
+            return allowZero
+                ? books.Select((t, i) => (t.Name, t.Price, selectedCounts[i], selectedCounts[i] * t.Price)).ToList()
+                : books.Select((t, i) => (t.Name, t.Price, selectedCounts[i] + rawN, (selectedCounts[i] + rawN) * t.Price)).ToList();
         }
 
         private class ParentInfo

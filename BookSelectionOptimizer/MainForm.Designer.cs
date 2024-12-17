@@ -70,6 +70,7 @@
             // txtTargetAmount
             // 
             this.txtTargetAmount.Location = new System.Drawing.Point(133, 85);
+            this.txtTargetAmount.MaxLength = 9;
             this.txtTargetAmount.Multiline = true;
             this.txtTargetAmount.Name = "txtTargetAmount";
             this.txtTargetAmount.Size = new System.Drawing.Size(100, 37);
@@ -78,6 +79,7 @@
             // txtMinQty
             // 
             this.txtMinQty.Location = new System.Drawing.Point(316, 85);
+            this.txtMinQty.MaxLength = 3;
             this.txtMinQty.Multiline = true;
             this.txtMinQty.Name = "txtMinQty";
             this.txtMinQty.Size = new System.Drawing.Size(100, 37);
@@ -86,6 +88,7 @@
             // txtMaxQty
             // 
             this.txtMaxQty.Location = new System.Drawing.Point(485, 85);
+            this.txtMaxQty.MaxLength = 3;
             this.txtMaxQty.Multiline = true;
             this.txtMaxQty.Name = "txtMaxQty";
             this.txtMaxQty.Size = new System.Drawing.Size(100, 37);
@@ -185,7 +188,7 @@
             this.allowZeroCheck.AutoSize = true;
             this.allowZeroCheck.Location = new System.Drawing.Point(395, 128);
             this.allowZeroCheck.Name = "allowZeroCheck";
-            this.allowZeroCheck.Size = new System.Drawing.Size(127, 27);
+            this.allowZeroCheck.Size = new System.Drawing.Size(114, 25);
             this.allowZeroCheck.TabIndex = 8;
             this.allowZeroCheck.Text = "允许为 0";
             this.allowZeroCheck.UseVisualStyleBackColor = true;
