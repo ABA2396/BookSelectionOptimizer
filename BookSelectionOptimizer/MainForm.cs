@@ -89,6 +89,21 @@ namespace BookSelectionOptimizer
             }
 
             var allowZero = allowZeroCheck.Checked;
+            if (allowZero)
+            {
+                if (maxQty > 10)
+                {
+                    MessageBox.Show(@"允许为 0 时最大数量不能超过 10！", @"错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Stop();
+                    return;
+                }
+            }
+            else if (maxQty - minQty > 10)
+            {
+                MessageBox.Show(@"最大数量和最小数量之差不能超过 10！", @"错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Stop();
+                return;
+            }
 
             // var results = await Task.Run(() => SolveBookSelectionWithZ3(books, prices, targetAmount, minQty, maxQty, allowZero));
             var bookList = books.Select((t, i) => new Book { Name = t, Price = prices[i] }).ToList();
@@ -108,7 +123,7 @@ namespace BookSelectionOptimizer
                     dgvResults.Rows.Add(book, (decimal)price / 100, qty, (decimal)cost / 100);
                 }
 
-                var totalSum = results.Sum(item => item.cost);
+                var totalSum = results.Sum(item => (long)item.cost);
                 SaveResultsToExcel(filePath, results);
                 if (totalSum != targetAmount)
                 {
@@ -195,8 +210,8 @@ namespace BookSelectionOptimizer
         {
             var rawN = n;
 
-            var minPossibleAmount = 0;
-            var maxPossibleAmount = 0;
+            long minPossibleAmount = 0;
+            long maxPossibleAmount = 0;
 
             foreach (var price in books.Select(book => book.Price))
             {
@@ -215,14 +230,14 @@ namespace BookSelectionOptimizer
             }
 
             // 如果不允许数量为 0，先将总价减去所有书籍的最小数量的总价
+            // 因为判断过 targetAmount <= minPossibleAmount，所以不会出现 minPossibleAmount 大于 int.MaxValue 的情况
             if (!allowZero)
             {
-                targetAmount -= minPossibleAmount;
+                targetAmount -= (int)minPossibleAmount;
                 m -= n;
                 n = 0;
             }
 
-            // 方案重构
             var dp = new bool[targetAmount + 1];
             dp[0] = true;
             var parent = new ParentInfo[targetAmount + 1];
